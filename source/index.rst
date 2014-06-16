@@ -3,20 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to chef-openstack-icehouse's documentation!
+Руководство по установке Openstack "IceHouse"
 ===================================================
 
-Contents:
+.. sidebar:: Содержание:
 
-.. toctree::
-   :maxdepth: 2
+	.. toctree::
+	   :maxdepth: 3
+
+	   first
 
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
