@@ -59,12 +59,20 @@ centos_cloud_config "/etc/neutron/plugin.ini" do
     "ml2 type_drivers gre",
     "ml2 mechanism_drivers openvswitch",
     "ml2_type_gre tunnel_id_ranges 1:1000",
-    "OVS enable_tunneling True",
+    "ovs enable_tunneling True",
     #    "OVS tenant_network_type gre",
-    "OVS integration_bridge br-int",
-    "OVS tunnel_bridge br-tun",
+    "odl integration_bridge br-int",
+    "odl tunnel_bridge br-tun",
+    "odl controllers = #{node[:ip][:neutron]}:8081:admin:admin",
+    "odl tunnel_id_ranges 1:1000",
+    "odl tun_peer_patch_port patch-int",
+    "odl int_peer_patch_port = patch-tun",
     #    "OVS tunnel_id_ranges 1:1000",
-    "OVS local_ip #{node[:auto][:internal_ip]}"]
+    "ovs local_ip #{node[:auto][:internal_ip]}",
+    "agent minimize_polling True",
+    "ml2_odl password admin",
+    "ml2_odl username admin",
+    "ml2_odl url http://#{node[:ip][:neutron]}:8081/controller/nb/v2/neutron"]
 end
 
 centos_cloud_config "/etc/neutron/neutron.conf" do
