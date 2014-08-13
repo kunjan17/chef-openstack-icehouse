@@ -1,5 +1,7 @@
 include_recipe "centos_cloud::repos"
 
-package "bash-completion" do
-  action :install
+%w[centos-release bash-completion].each do |pkg|
+  package pkg do
+    action :install
+  end
 end
