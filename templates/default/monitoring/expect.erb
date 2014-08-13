@@ -1,0 +1,7 @@
+#!/usr/bin/expect -f
+spawn htpasswd -c /etc/nagios/passwd nagiosadmin
+expect "New password:"
+send "<%= node[:creds][:admin_password] %>\r"
+expect "Re-type new password:"
+send "<%= node[:creds][:admin_password] %>\r"
+expect eof

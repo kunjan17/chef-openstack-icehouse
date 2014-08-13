@@ -1,0 +1,6 @@
+[openstack-havana]
+name=OpenStack Folsom Repository for EPEL 6
+baseurl=http://repos.fedorapeople.org/repos/openstack/openstack-havana/epel-6/
+#baseurl=http://repos.fedorapeople.org/repos/openstack/openstack-icehouse/epel-6/
+enabled=1
+gpgcheck=0

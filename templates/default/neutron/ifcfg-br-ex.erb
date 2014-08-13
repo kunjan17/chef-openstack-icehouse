@@ -1,0 +1,9 @@
+DEVICE="br-ex"
+BOOTPROTO="none"
+DNS1="8.8.8.8"
+GATEWAY=<%= node[:auto][:gateway] %>
+IPADDR=<%= node[:auto][:external_ip] %>
+NETMASK=<%= node[:auto][:netmask] %>
+ONBOOT="yes"
+TYPE="OVSBridge"
+DEVICETYPE="ovs"

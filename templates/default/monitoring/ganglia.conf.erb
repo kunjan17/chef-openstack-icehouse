@@ -1,0 +1,15 @@
+  #
+  # Ganglia monitoring system php web frontend
+  #
+  
+  Alias /ganglia /usr/share/ganglia
+
+  <Location /ganglia>
+    Order deny,allow
+    Allow from all
+    AuthName "Ganglia Access"
+    AuthType Basic
+    AuthUserFile /etc/nagios/passwd
+    Require valid-user
+
+  </Location>

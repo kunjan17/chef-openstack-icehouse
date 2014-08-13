@@ -1,0 +1,49 @@
+catalog.RegionOne.identity.publicURL = http://<%= node[:ip_ex][:keystone] %>:$(public_port)s/v2.0
+catalog.RegionOne.identity.adminURL = http://<%= node[:ip][:keystone] %>:$(admin_port)s/v2.0
+catalog.RegionOne.identity.internalURL = http://<%= node[:ip][:keystone] %>:$(public_port)s/v2.0
+catalog.RegionOne.identity.name = keystone
+
+catalog.RegionOne.compute.publicURL = http://<%= node[:ip_ex][:nova] %>:$(compute_port)s/v2/$(tenant_id)s
+catalog.RegionOne.compute.adminURL = http://<%= node[:ip][:nova] %>:$(compute_port)s/v2/$(tenant_id)s
+catalog.RegionOne.compute.internalURL = http://<%= node[:ip][:nova]%>:$(compute_port)s/v2/$(tenant_id)s
+catalog.RegionOne.compute.name = nova
+
+catalog.RegionOne.volume.publicURL = http://<%= node[:ip_ex][:cinder] %>:8776/v1/$(tenant_id)s
+catalog.RegionOne.volume.adminURL = http://<%= node[:ip][:cinder] %>:8776/v1/$(tenant_id)s
+catalog.RegionOne.volume.internalURL = http://<%= node[:ip][:cinder] %>:8776/v1/$(tenant_id)s
+catalog.RegionOne.volume.name = cinder
+
+catalog.RegionOne.ec2.publicURL = http://<%= node[:ip_ex][:nova] %>:8773/services/Cloud
+catalog.RegionOne.ec2.adminURL = http://<%= node[:ip][:nova] %>:8773/services/Admin
+catalog.RegionOne.ec2.internalURL = http://<%= node[:ip][:nova] %>:8773/services/Cloud
+catalog.RegionOne.ec2.name = ec2
+
+catalog.RegionOne.image.publicURL = http://<%= node[:ip_ex][:glance]%>:9292
+catalog.RegionOne.image.adminURL = http://<%= node[:ip][:glance] %>:9292
+catalog.RegionOne.image.internalURL = http://<%= node[:ip][:glance] %>:9292
+catalog.RegionOne.image.name = glance
+
+catalog.RegionOne.object_store.publicURL = http://<%= node[:ip_ex][:swift] %>:8080/v1/AUTH_%(tenant_id)s
+catalog.RegionOne.object_store.internalURL = http://<%= node[:ip][:swift] %>:8080/v1/AUTH_%(tenant_id)s
+catalog.RegionOne.object_store.adminURL = http://<%= node[:ip][:swift] %>:8080
+catalog.RegionOne.object_store.name = swift
+
+catalog.RegionOne.s3.publicURL = http://<%= node[:ip_ex][:swift] %>:8080
+catalog.RegionOne.s3.internalURL = http://<%= node[:ip][:swift] %>:8080
+catalog.RegionOne.s3.adminURL = http://<%= node[:ip][:swift] %>:8080
+catalog.RegionOne.s3.name = swift_s3
+
+catalog.RegionOne.network.publicURL = http://<%= node[:ip_ex][:neutron] %>:9696
+catalog.RegionOne.network.adminURL = http://<%= node[:ip][:neutron] %>:9696
+catalog.RegionOne.network.internalURL = http://<%= node[:ip][:neutron] %>:9696
+catalog.RegionOne.network.name = neutron
+
+catalog.RegionOne.orchestration.publicURL = http://<%= node[:ip_ex][:heat] %>:8004/v1/$(tenant_id)s
+catalog.RegionOne.orchestration.adminURL = http://<%= node[:ip][:heat] %>/v1/$(tenant_id)s
+catalog.RegionOne.orchestration.internalURL = http://<%= node[:ip][:heat] %>:8004/v1/$(tenant_id)s
+catalog.RegionOne.orchestration.name = heat
+
+catalog.RegionOne.metering.publicURL = http://<%= node[:ip_ex][:ceilometer] %>:8777
+catalog.RegionOne.metering.adminURL = http://<%=node[:ip][:ceilometer] %>:8777
+catalog.RegionOne.metering.internalURL = http://<%= node[:ip][:ceilometer] %>:8777
+catalog.RegionOne.metering.name = ceilometer

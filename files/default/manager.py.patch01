@@ -1,0 +1,26 @@
++++ /usr/lib/python2.6/site-packages/nova/compute/manager.py
+
+@@ -3565,7 +3565,9 @@
+         if not CONF.spice.enabled:
+             raise exception.ConsoleTypeInvalid(console_type=console_type)
+ 
+-        if console_type == 'spice-html5':
++        if console_type == 'spice-http-proxy':
++            access_url = '%s?token=%s' % (CONF.spice.httpproxy_base_url, token)
++        elif console_type == 'spice-html5':
+             # For essex, spicehtml5proxy_base_url must include the full path
+             # including the html file (like http://myhost/spice_auto.html)
+             access_url = '%s?token=%s' % (CONF.spice.html5proxy_base_url,
+@@ -3588,10 +3590,10 @@
+ 
+     @rpc_common.client_exceptions(exception.ConsoleTypeInvalid,
+             exception.InstanceNotReady, exception.InstanceNotFound)
+-    @wrap_exception()
++    @wrap_exception()
+     @wrap_instance_fault
+     def validate_console_port(self, ctxt, instance, port, console_type):
+-        if console_type == "spice-html5":
++        if console_type in ["spice-html5", "spice-http-proxy"]:
+             console_info = self.driver.get_spice_console(instance)
+         else:
+             console_info = self.driver.get_vnc_console(instance)
