@@ -57,7 +57,7 @@ centos_cloud_config "/etc/neutron/plugin.ini" do
     "securitygroup enable_security_group True",
     "ml2 tenant_network_types gre",
     "ml2 type_drivers gre",
-    "ml2 mechanism_drivers openvswitch",
+    "ml2 mechanism_drivers opendaylight",
     "ml2_type_gre tunnel_id_ranges 1:1000",
     "ovs enable_tunneling True",
     #    "OVS tenant_network_type gre",
