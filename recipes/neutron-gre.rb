@@ -72,6 +72,12 @@ centos_cloud_config "/etc/neutron/dhcp_agent.ini" do
     "DEFAULT dnsmasq_config_file /etc/neutron/dnsmasq-neutron.conf"]
 end
 
+centos_cloud_config "/etc/neutron/lbaas_agent.ini" do
+  command ["DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver",
+    "DEFAULT device_driver neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver",
+    "haproxy user_group haproxy"]
+end
+
 libcloud_file_append "/etc/neutron/dnsmasq-neutron.conf" do
   line ["dhcp-option-force=26,1454"]
 end

@@ -94,7 +94,8 @@ centos_cloud_config "/etc/neutron/neutron.conf" do
     "DEFAULT nova_admin_tenant_id #{admin_id}",
     "DEFAULT nova_admin_password #{node[:creds][:admin_password]}",
     "DEFAULT nova_admin_auth_url http://#{node[:ip][:keystone]}:35357/v2.0",
-    "database connection mysql://neutron:#{node[:creds][:mysql_password]}@#{node[:ip][:neutron]}/neutron"]
+    "database connection mysql://neutron:#{node[:creds][:mysql_password]}@#{node[:ip][:neutron]}/neutron",
+    "service_providers service_provider LOADBALANCER:Haproxy:neutron.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default"]
 end
 
 %w[iproute kernel].each do |pkg|
@@ -125,5 +126,9 @@ libcloud_file_append "/etc/sysconfig/network-scripts/ifcfg-br-int" do
     "TYPE=OVSBridge",
     "ONBOOT=yes",
     "BOOTPROTO=none"]
+end
+
+libcloud_file_append "/etc/profile.d/ovs.sh" do
+  line ["alias ovs-ofctl='ovs-ofctl -O OpenFlow13'"]
 end
 
