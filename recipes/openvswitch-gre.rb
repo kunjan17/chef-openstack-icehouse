@@ -125,10 +125,31 @@ libcloud_file_append "/etc/sysconfig/network-scripts/ifcfg-br-int" do
     "DEVICETYPE=ovs",
     "TYPE=OVSBridge",
     "ONBOOT=yes",
-    "BOOTPROTO=none"]
+    "BOOTPROTO=none",
+    'OVS_EXTRA="set bridge $DEVICE protocols=OpenFlow10,OpenFlow12,OpenFlow13"']
 end
 
-libcloud_file_append "/etc/profile.d/ovs.sh" do
-  line ["alias ovs-ofctl='ovs-ofctl -O OpenFlow13'"]
-end
+#libcloud_file_append "/etc/profile.d/ovs.sh" do
+#  line ["alias ovs-ofctl='ovs-ofctl -O OpenFlow13'"]
+#end
+
+#BUGFIX
+
+execute 'ovs-vsctl set Open_vSwitch $(ovs-vsctl get Open_vSwitch . _uuid) other_config={"local_ip"=' + node[:auto][:internal_ip]+'}'
+
+execute 'ovs-vsctl set-manager tcp:127.0.0.1:6640'
+
+#execute "mv /usr/bin/ovs-ofctl /usr/bin/ovs-ofctl.old" do
+#  not_if("ls /usr/bin | grep ovs-ofctl.old")
+#  action :run
+#end
+
+#template "/usr/bin/ovs-ofctl" do
+#  owner "root"
+#  group "root"
+#  mode  "0755"
+#  source "opendaylight/ovs-ofctl.erb"
+#end
+
+  
 

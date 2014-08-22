@@ -26,9 +26,9 @@ template "/etc/sysconfig/opendaylight-controller" do
   source "opendaylight/opendaylight-controller.erb"
 end
 
-execute 'ovs-vsctl set Open_vSwitch $(ovs-vsctl get Open_vSwitch . _uuid) other_config={"local_ip"=' + node[:auto][:internal_ip]+'}'
+#execute 'ovs-vsctl set Open_vSwitch $(ovs-vsctl get Open_vSwitch . _uuid) other_config={"local_ip"=' + node[:auto][:internal_ip]+'}'
 
-execute 'ovs-vsctl set-manager tcp:127.0.0.1:6640'
+#execute 'ovs-vsctl set-manager tcp:127.0.0.1:6640'
 
 execute "rm -f /var/lib/opendaylight-controller/plugins/org.opendaylight.controller.samples.simpleforwarding-*" do
   action :run
