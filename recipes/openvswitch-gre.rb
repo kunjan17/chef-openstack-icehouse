@@ -109,25 +109,26 @@ end
     action [:enable, :restart]
   end
 end
-
-execute "ovs-vsctl add-br br-int" do
-  not_if("ovs-vsctl list-br | grep br-int")
-  action :run
-end
+#----1-----
+#execute "ovs-vsctl add-br br-int" do
+#  not_if("ovs-vsctl list-br | grep br-int")
+#  action :run
+#end
 
 simple_iptables_rule "neutron" do
   rule "-p tcp -m multiport --dports 9696"
   jump "ACCEPT"
 end
 
-libcloud_file_append "/etc/sysconfig/network-scripts/ifcfg-br-int" do
-  line ["DEVICE=br-int",
-    "DEVICETYPE=ovs",
-    "TYPE=OVSBridge",
-    "ONBOOT=yes",
-    "BOOTPROTO=none",
-    'OVS_EXTRA="set bridge $DEVICE protocols=OpenFlow10,OpenFlow12,OpenFlow13"']
-end
+#----2------
+#libcloud_file_append "/etc/sysconfig/network-scripts/ifcfg-br-int" do
+#  line ["DEVICE=br-int",
+#    "DEVICETYPE=ovs",
+#    "TYPE=OVSBridge",
+#    "ONBOOT=yes",
+#    "BOOTPROTO=none",
+#    'OVS_EXTRA="set bridge $DEVICE protocols=OpenFlow10,OpenFlow12,OpenFlow13"']
+#end
 
 #libcloud_file_append "/etc/profile.d/ovs.sh" do
 #  line ["alias ovs-ofctl='ovs-ofctl -O OpenFlow13'"]

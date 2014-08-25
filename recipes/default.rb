@@ -21,6 +21,7 @@ include_recipe "centos_cloud::swift-node"
 include_recipe "centos_cloud::heat"
 include_recipe "centos_cloud::ceilometer"
 include_recipe "centos_cloud::dashboard"
+#include_recipe "centos_cloud::test"
 
 #include_recipe "centos_cloud::monitoring-server"
 #include_recipe "centos_cloud::monitoring-client"

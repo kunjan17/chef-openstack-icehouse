@@ -24,34 +24,34 @@ centos_cloud_database "neutron" do
   password node[:creds][:mysql_password]
 end
 
-execute "ovs-vsctl add-br br-ex" do
-  not_if("ovs-vsctl list-br | grep br-ex")
-  action :run
-end
+#execute "ovs-vsctl add-br br-ex" do
+#  not_if("ovs-vsctl list-br | grep br-ex")
+#  action :run
+#end
 
-template "/etc/sysconfig/network-scripts/ifcfg-" + node[:auto][:external_nic]  do
-  not_if do
-    File.exists?("/etc/sysconfig/network-scripts/ifcfg-br-ex")
-  end
-  owner "root"
-  group "root"
-  mode  "0644"
-  source "neutron/ifcfg-eth0.erb"
-end
+#template "/etc/sysconfig/network-scripts/ifcfg-" + node[:auto][:external_nic]  do
+#  not_if do
+#    File.exists?("/etc/sysconfig/network-scripts/ifcfg-br-ex")
+#  end
+#  owner "root"
+#  group "root"
+#  mode  "0644"
+#  source "neutron/ifcfg-eth0.erb"
+#end
 
-template "/etc/sysconfig/network-scripts/ifcfg-br-ex" do
-  not_if do
-    File.exists?("/etc/sysconfig/network-scripts/ifcfg-br-ex")
-  end
-  owner "root"
-  group "root"
-  mode  "0644"
-  source "neutron/ifcfg-br-ex.erb"
-end
+#template "/etc/sysconfig/network-scripts/ifcfg-br-ex" do
+#  not_if do
+#    File.exists?("/etc/sysconfig/network-scripts/ifcfg-br-ex")
+#  end
+#  owner "root"
+#  group "root"
+#  mode  "0644"
+#  source "neutron/ifcfg-br-ex.erb"
+#end
 
-service "network" do
-  action :restart
-end
+#service "network" do
+#  action :restart
+#end
 
 centos_cloud_config "/etc/neutron/metadata_agent.ini" do
   command ["DEFAULT auth_strategy keystone",
