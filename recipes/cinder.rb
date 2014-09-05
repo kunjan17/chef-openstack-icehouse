@@ -24,7 +24,7 @@ centos_cloud_database "cinder" do
 end
 
 # Install cinder packages
-%w[openstack-cinder iscsi-initiator-utils scsi-target-utils].each do |pkg|
+%w[openstack-cinder targetcli].each do |pkg|
   package pkg do
     action :install
   end
@@ -37,6 +37,9 @@ centos_cloud_config "/etc/cinder/cinder.conf" do
     "DEFAULT auth_strategy keystone",
     "DEFAULT notification_driver cinder.openstack.common.notifier.rabbit_notifier",
     "DEFAULT control_exchange cinder",
+    "DEFAULT iscsi_helper lioadm",
+    "DEFAULT iscsi_ip_address 127.0.0.1",
+    "DEFAULT osapi_volume_workers #{node[:cpu][:real]}",
     "keystone_authtoken auth_host #{node[:ip][:keystone]}",
     "keystone_authtoken admin_tenant_name admin",
     "keystone_authtoken admin_user admin",
@@ -46,8 +49,11 @@ centos_cloud_config "/etc/cinder/cinder.conf" do
     "DEFAULT sql_connection mysql://cinder:" <<
     "#{node[:creds][:mysql_password]}@localhost/cinder",
     # Message broker
-    "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_qpid",
-    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
+    "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
+#   "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_qpid",
+#   "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
+    "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
+    "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
     # Multi backend
 #    "DEFAULT enabled_backends lvm,nexenta",
     "DEFAULT enabled_backends lvm",
@@ -97,7 +103,7 @@ execute "cinder-manage db sync"
 
 # Enable services
 %w[
-tgtd openstack-cinder-volume
+target openstack-cinder-volume
 openstack-cinder-scheduler openstack-cinder-api
 ].each do |srv|
   service srv do

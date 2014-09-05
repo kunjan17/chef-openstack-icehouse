@@ -36,9 +36,12 @@ openstack-ceilometer-central python-ceilometerclient
 end
 
 centos_cloud_config "/etc/ceilometer/ceilometer.conf" do
-  command ["DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_qpid",
+  command [#"DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_qpid",
+    "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
+    "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
+    "DEFAULT rabbit_password #{node[:creds][:rabbitmq-password]}",
     "DEFAULT log_dir /var/log/ceilometer",
-    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
+#    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
     "database connection mysql://ceilometer:#{node[:creds][:mysql_password]}@localhost/ceilometer",
     "publisher_rpc metering_secret #{node[:creds][:metering_secret]}",
     "keystone_authtoken service_host #{node[:ip][:keystone]}",

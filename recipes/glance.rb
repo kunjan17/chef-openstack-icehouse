@@ -53,9 +53,12 @@ centos_cloud_config "/etc/glance/glance-api.conf" do
     "DEFAULT swift_store_auth_address" <<
     " http://#{node[:ip][:keystone]}:5000/v2.0/",
     "DEFAULT swift_store_user admin:admin",
-    "DEFAULT notifier_strategy qpid",
-    "DEFAULT rpc_backend qpid",
-    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
+#    "DEFAULT notifier_strategy qpid",
+#    "DEFAULT rpc_backend qpid",
+#    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
+    "DEFAULT notifier_strategy rabbit",
+    "DEFAULT rabbit_password #{node[:creds][:rabbitmq-password]}",
+    "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
     "DEFAULT swift_store_create_container_on_put True",
     "DEFAULT swift_store_key #{node[:creds][:admin_password]}",
     "DEFAULT db_enforce_mysql_charset False"]

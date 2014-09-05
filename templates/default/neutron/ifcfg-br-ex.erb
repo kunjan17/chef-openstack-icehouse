@@ -7,4 +7,5 @@ NETMASK=<%= node[:auto][:netmask] %>
 ONBOOT="yes"
 TYPE="OVSBridge"
 DEVICETYPE="ovs"
-OVS_EXTRA="set bridge $DEVICE protocols=OpenFlow10,OpenFlow12,OpenFlow13"
+#OVS_EXTRA="set bridge $DEVICE protocols=OpenFlow10,OpenFlow12,OpenFlow13"
+#OVS_EXTRA="set-controller $DEVICE tcp:127.0.0.1:6633"

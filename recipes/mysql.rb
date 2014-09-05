@@ -8,7 +8,7 @@
 #
 include_recipe "centos_cloud::iptables-policy"
 
-%w{mariadb-server MySQL-python}.each  do |pkg|
+%w{mariadb-galera-server MySQL-python}.each  do |pkg|
   package pkg do
     action :install
   end

@@ -6,15 +6,14 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-include_recipe "centos_cloud::ntp"
+include_recipe "centos_cloud::ntp-server"
 include_recipe "centos_cloud::bash-completion"
-include_recipe "centos_cloud::qpid"
+include_recipe "centos_cloud::rabbitmq-server"
 include_recipe "centos_cloud::keystone"
 include_recipe "centos_cloud::swift-proxy"
 include_recipe "centos_cloud::glance"
 include_recipe "centos_cloud::cinder"
-include_recipe "centos_cloud::opendaylight-zip"
-include_recipe "centos_cloud::neutron-gre"
+include_recipe "centos_cloud::neutron"
 include_recipe "centos_cloud::nova"
 include_recipe "centos_cloud::nova-compute-kvm"
 include_recipe "centos_cloud::swift-node"

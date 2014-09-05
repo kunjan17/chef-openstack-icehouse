@@ -14,7 +14,7 @@ include_recipe "centos_cloud::iptables-policy"
 
 %w[
 mod_wsgi httpd mod_ssl openstack-dashboard
-memcached python-memcached
+memcached python-memcached python-django-sahara
 ].each do |pkg|
   package pkg do
     action :install
@@ -24,6 +24,20 @@ end
 simple_iptables_rule "dashboard" do
   rule "-p tcp -m multiport --dports 443"
   jump "ACCEPT"
+end
+
+template "/usr/share/openstack-dashboard/openstack_dashboard/settings.py" do 
+  mode "0644"
+  owner "root"
+  group "root"
+  source "dashboard/settings.py.erb"
+end
+
+template "/etc/openstack-dashboard/local_settings" do 
+  mode "0640"
+  owner "root"
+  group "root"
+  source "dashboard/local_settings.erb"
 end
 
 libcloud_file_append "/var/www/html/index.html" do

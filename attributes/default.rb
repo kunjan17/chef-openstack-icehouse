@@ -6,7 +6,10 @@ def my_first_private_ipv4
 end
 
 def my_first_public_ipv4
-  Socket.ip_address_list.detect{|intf| intf.ipv4? and !intf.ipv4_loopback? and !intf.ipv4_multicast? and !intf.ipv4_private?}
+  Socket.ip_address_list.detect{|intf| intf.ipv4? \
+                                  and !intf.ipv4_loopback? \
+                                  and !intf.ipv4_multicast? \
+                                  and !intf.ipv4_private?}
 end
 
 external_ipv4 = my_first_public_ipv4.nil? ? my_first_private_ipv4.ip_address : my_first_public_ipv4.ip_address
@@ -34,6 +37,7 @@ default[:auto][:netmask] = node[:network][:interfaces][external_iface]\
 #default[:creds][:mysql_password]  = SecureRandom.urlsafe_base64(8)
 default[:creds][:admin_password]  = "cl0udAdmin"
 default[:creds][:mysql_password]  = "cl0udAdmin"
+default[:creds][:rabbitmq_password] = "cl0udAdmin"
 #default[:creds][:keystone_token]  = SecureRandom.urlsafe_base64(20)
 #default[:creds][:swift_hash]      = SecureRandom.urlsafe_base64(20)
 #default[:creds][:neutron_secret]  = SecureRandom.urlsafe_base64(20)
@@ -46,7 +50,8 @@ default[:creds][:esxi_password]   = "mySuperSecret"
 
 default[:ip][:controller]     = node[:auto][:internal_ip]
 default[:ip_ex][:controller]  = node[:auto][:external_ip]
-default[:ip][:qpid]           = node[:ip][:controller]
+#default[:ip][:qpid]           = node[:ip][:controller]
+default[:ip][:rabbitmq]       = node[:ip][:controller]
 default[:ip][:keystone]       = node[:ip][:controller]
 default[:ip_ex][:keystone]    = node[:ip_ex][:controller]
 default[:ip][:swift]          = node[:ip][:controller]
@@ -63,6 +68,8 @@ default[:ip][:heat]           = node[:ip][:controller]
 default[:ip_ex][:heat]        = node[:ip_ex][:controller] 
 default[:ip][:ceilometer]     = node[:ip][:controller]
 default[:ip_ex][:ceilometer]  = node[:ip_ex][:controller]
+default[:ip][:sahara]         = node[:ip][:controller]
+default[:ip_ex][:sahara]      = node[:ip_ex][:controller]
 default[:ip][:monitoring]     = node[:ip][:controller]
   
 default[:ip][:esxi]                   = "192.168.250.100"
