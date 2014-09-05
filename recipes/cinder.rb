@@ -35,7 +35,7 @@ end
 centos_cloud_config "/etc/cinder/cinder.conf" do
   command [# Identity service connection
     "DEFAULT auth_strategy keystone",
-    "DEFAULT notification_driver cinder.openstack.common.notifier.rabbit_notifier",
+    "DEFAULT notification_driver cinder.openstack.common.notifier.rpc_notifier",
     "DEFAULT control_exchange cinder",
     "DEFAULT iscsi_helper lioadm",
     "DEFAULT iscsi_ip_address 127.0.0.1",

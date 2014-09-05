@@ -40,7 +40,7 @@ centos_cloud_config "/etc/heat/heat.conf" do
     "DEFAULT heat_watch_server_url http://#{node[:ip][:heat]}:8003",
     "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
     "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
-    "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
+    "DEFAULT rabbit_password #{node[:creds][:rabbitmq-password]}",
     "keystone_authtoken service_host #{node[:ip][:keystone]}",
     "keystone_authtoken auth_host #{node[:ip][:keystone]}",
     "keystone_authtoken auth_uri http://#{node[:ip][:keystone]}:35357/v2.0",

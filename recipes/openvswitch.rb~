@@ -84,7 +84,7 @@ centos_cloud_config "/etc/neutron/neutron.conf" do
 #    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
     "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
     "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
-    "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
+    "DEFAULT rabbit_password #{node[:creds][:rabbitmq-password]}",
     "DEFAULT allow_overlapping_ips True",
     "DEFAULT notification_driver neutron.openstack.common.notifier.rpc_notifier",
 #    "DEFAULT core_plugin neutron.plugins.openvswitch.ovs_neutron_plugin.OVSNeutronPluginV2",

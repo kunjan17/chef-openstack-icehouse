@@ -42,7 +42,7 @@ service "mongod" do
 end
 
 db_name="ceilometer"
-execute "mongo ceilometer --eval 'db.addUser(#{db_name},#{node[:creds][:mysql_password]}, false)'"
+execute["mongo ceilometer --eval 'db.addUser(#{db_name},#{node[:creds][:mysql_password]}, false)'"]
 
 centos_cloud_config "/etc/ceilometer/ceilometer.conf" do
   command [#"DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_qpid",

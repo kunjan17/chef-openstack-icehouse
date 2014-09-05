@@ -12,7 +12,7 @@ include_recipe "selinux::disabled"
 include_recipe "centos_cloud::repos"
 include_recipe "centos_cloud::mysql"
 include_recipe "centos_cloud::iptables-policy"
-include_recipe "centos_cloud::dashboard"
+include_recipe "centos_cloud::dashbosrd"
 
 libcloud_ssh_keys node[:creds][:ssh_keypair] do
   data_bag "ssh_keypairs"
@@ -45,7 +45,7 @@ centos_cloud_config "/etc/nova/nova.conf" do
 #    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
     "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
     "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
-    "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
+    "DEFAULT rabbit_password #{node[:creds][:rabbitmq-password]}",
     "DEFAULT network_api_class nova.network.neutronv2.api.API",
     "DEFAULT neutron_auth_strategy keystone",
     "DEFAULT neutron_url http://#{node[:ip][:neutron]}:9696/",
