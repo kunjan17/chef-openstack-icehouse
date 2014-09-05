@@ -26,7 +26,11 @@ simple_iptables_rule "rabbitmq" do
 end
 
 service "rabbitmq-server" do
-    action [:enable, :restart]
+  action [:enable, :start]
+end
+
+service "rabbitmq-server" do
+  action :restart
 end
 
 execute "rabbitmqctl -q change_password guest '#{node[:creds][:rabbitmq_password]}'" do

@@ -15,6 +15,16 @@ simple_iptables_rule "ping" do
   jump "ACCEPT"
 end
 
+simple_iptables_rule "localhost-tcp" do
+  rule "-s 127.0.0.1 -p tcp"
+  jump "ACCEPT"
+end
+
+simple_iptables_rule "localhost-udp" do
+  rule "-s 127.0.0.1 -p udp"
+  jump "ACCEPT"
+end
+
 # Reject packets other than those explicitly allowed
 simple_iptables_policy "INPUT" do
   policy "DROP"
