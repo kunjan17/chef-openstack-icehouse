@@ -1,0 +1,19 @@
+#! /bin/bash
+source /root/.bashrc
+exist=$(neutron net-list | grep -o "demo-net")
+if [ -n "$exist" ] ; then
+echo "Demo network already exists, doing nothing"
+else
+neutron net-create demo-net
+neutron subnet-create demo-net 10.0.0.0/24 --name demo-subnet
+neutron router-create demo-router
+neutron router-gateway-set demo-router floating-pool
+neutron router-interface-add demo-router demo-subnet
+fi
+exist=$(nova list | grep -o "demo-instance")
+if [ -n "$exist" ] ; then
+echo "Demo instance already exists, doing nothing"
+else
+glance image-create --name demo-image --disk-format qcow2 --container-format bare  --location https://launchpad.net/cirros/trunk/0.3.0/+download/cirros-0.3.0-x86_64-disk.img
+nova boot --flavor 1 --image demo-image demo-instance --nic net-id=$(neutron net-list | grep demo-net | awk '{print $2}')
+fi

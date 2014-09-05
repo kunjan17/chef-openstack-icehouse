@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenDaylight Controller
+After=network.service
+
+[Service]
+Type=forking
+PIDFile=/tmp/opendaylight.PID
+User=root
+Group=root
+WorkingDirectory=/usr/share/opendaylight
+LimitNOFILE=30720
+LimitNPROC=20480
+ExecStart=-/usr/share/opendaylight/run.sh -of13 -Xmx1G -virt ovsdb -start
+ExecStop=-/usr/share/opendaylight/run.sh -stop
+
+[Install]
+WantedBy=multi-user.target
