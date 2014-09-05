@@ -43,7 +43,7 @@ centos_cloud_config "/etc/nova/nova.conf" do
     #message_broker
 #    "DEFAULT rpc_backend nova.openstack.common.rpc.impl_qpid",
 #    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
-    "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
+    "DEFAULT rpc_backend nova.openstack.common.rpc.impl_kombu",
     "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
     "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
     "DEFAULT network_api_class nova.network.neutronv2.api.API",

@@ -82,7 +82,7 @@ centos_cloud_config "/etc/neutron/neutron.conf" do
   command ["DEFAULT auth_strategy keystone",
 #    "DEFAULT rpc_backend neutron.openstack.common.rpc.impl_qpid",
 #    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
-    "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
+    "DEFAULT rpc_backend neutron.openstack.common.rpc.impl_kombu",
     "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
     "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
     "DEFAULT allow_overlapping_ips True",

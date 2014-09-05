@@ -46,7 +46,7 @@ execute "mongo ceilometer --eval 'db.addUser(#{db_name},#{node[:creds][:mysql_pa
 
 centos_cloud_config "/etc/ceilometer/ceilometer.conf" do
   command [#"DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_qpid",
-    "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
+    "DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_kombu",
     "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
     "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
     "DEFAULT log_dir /var/log/ceilometer",
