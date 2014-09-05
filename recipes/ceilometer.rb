@@ -29,8 +29,8 @@ simple_iptables_rule "ceilometer" do
   jump "ACCEPT"
 end
 
-%w[mongodb-server openstack-ceilometer-api openstack-ceilometer-collector
-openstack-ceilometer-central python-ceilometerclient pyhton-ceilometer
+%w[mongodb-server mongodb openstack-ceilometer-api openstack-ceilometer-collector
+openstack-ceilometer-central python-ceilometerclient python-ceilometer
 ].each do |pkg|
   package pkg do
     action :install
@@ -41,8 +41,9 @@ service "mongod" do
   action [:enable,:restart]
 end
 
-db_name="ceilometer"
-execute "mongo ceilometer --eval 'db.addUser(#{db_name},#{node[:creds][:mysql_password]}, false)'"
+db_name='"ceilometer"'
+db_password='"'+node[:creds][:mysql_password]+'"'
+execute "mongo ceilometer --eval 'db.addUser(#{db_name},#{db_password}, false)'"
 
 centos_cloud_config "/etc/ceilometer/ceilometer.conf" do
   command [#"DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_qpid",

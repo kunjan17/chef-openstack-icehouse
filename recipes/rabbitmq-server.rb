@@ -29,6 +29,11 @@ service "rabbitmq-server" do
   action [:enable, :start]
 end
 
+execute "rabbitmqctl -q change_password guest '#{node[:creds][:rabbitmq_password]}'" do
+  ignore_failure true
+  action :run
+end
+
 service "rabbitmq-server" do
   action :restart
 end
@@ -37,5 +42,4 @@ execute "rabbitmqctl -q change_password guest '#{node[:creds][:rabbitmq_password
   ignore_failure true
   action :run
 end
-
 

@@ -11,7 +11,8 @@ simple_iptables_rule "opendaylight" do
 end
 
 #Install necessary packages (unzip, java, etc.)
-%w[unzip opendaylight-controller-dependencies].each do |pkg|
+#%w[unzip opendaylight-controller-dependencies].each do |pkg|
+%w[unzip java-1.7.0-openjdk].each do |pkg|
   package pkg do
     action :install
   end
