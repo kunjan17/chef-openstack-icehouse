@@ -83,7 +83,8 @@ centos_cloud_config "/etc/nova/nova.conf" do
     "keystone_authtoken admin_tenant_name admin",
     "keystone_authtoken admin_user admin",
     "keystone_authtoken admin_password #{node[:creds][:admin_password]}",
-    "keystone_authtoken auth_host #{node[:ip][:keystone]}"
+    "keystone_authtoken auth_host #{node[:ip][:keystone]}",
+    "keystone_authtoken identity_uri http://#{node[:ip][:keystone]}:35357",
   ]
 end
 

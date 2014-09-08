@@ -1,5 +1,17 @@
 include_recipe "simple_iptables::default"
 
+package "iptables-services" do 
+  action :install
+end
+
+service "firewalld" do
+  action [:stop, :disable]
+end
+
+service "iptables" do
+  action [:start, :enable]
+end
+
 simple_iptables_rule "ssh" do
   rule "--proto tcp --dport 22"
   jump "ACCEPT"

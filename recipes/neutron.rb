@@ -98,7 +98,7 @@ template "/root/floating-pool.sh" do
   mode "0744"
 end
 
-%w[neutron-dhcp-agent neutron-openvswitch-agent neutron-l3-agent neutron-server neutron-metadata-agent].each do |srv|
+%w[openvswitch neutron-dhcp-agent neutron-openvswitch-agent neutron-l3-agent neutron-server neutron-metadata-agent].each do |srv|
   service srv do
     action [:enable, :restart]
   end

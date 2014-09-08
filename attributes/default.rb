@@ -1,15 +1,16 @@
 require "socket"
 require 'securerandom'
 
-def my_first_private_ipv4
-  Socket.ip_address_list.detect{|intf| intf.ipv4_private?}
+def get_public_ipv4
+  UDPSocket.open {|s| s.connect("64.233.187.99", 1); s.addr.last}
 end
 
 def my_first_public_ipv4
-  Socket.ip_address_list.detect{|intf| intf.ipv4? \
-                                  and !intf.ipv4_loopback? \
-                                  and !intf.ipv4_multicast? \
-                                  and !intf.ipv4_private?}
+  Socket.ip_address_list.detect{|intf| intf.ip_address == get_public_ipv4}
+end
+
+def my_first_private_ipv4
+  Socket.ip_address_list.detect{|intf| intf.ipv4_private? and intf!=my_first_public_ipv4 }
 end
 
 external_ipv4 = my_first_public_ipv4.nil? ? my_first_private_ipv4.ip_address : my_first_public_ipv4.ip_address
@@ -72,7 +73,7 @@ default[:ip][:sahara]         = node[:ip][:controller]
 default[:ip_ex][:sahara]      = node[:ip_ex][:controller]
 default[:ip][:monitoring]     = node[:ip][:controller]
   
-default[:ip][:esxi]                   = "192.168.250.100"
-default[:ip][:nexenta]                = "195.208.117.178"
+#default[:ip][:esxi]                   = "192.168.250.100"
+#default[:ip][:nexenta]                = "195.208.117.178"
   
 

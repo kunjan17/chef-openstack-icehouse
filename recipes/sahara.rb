@@ -33,18 +33,28 @@ centos_cloud_database "sahara" do
 end
 
 centos_cloud_config "/etc/sahara/sahara.conf" do
-  command [" database connection mysql://heat:#{node[:creds][:mysql_password]}@localhost/sahara",
+  command [" database connection mysql://sahara:#{node[:creds][:mysql_password]}@localhost/sahara",
     "DEFAULT os_auth_host #{node[:ip][:keystone]}",
     "DEFAULT os_auth_port 35357",
+    "DEFAULT enable_notifications true",
+    "DEFAULT notification_driver messaging",
+    "DEFAULT rpc_backend rabbit",
+    "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
+    "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
     "DEFAULT os_admin_tenant_name admin",
     "DEFAULT os_admin_username admin",
-    "DEFAULT os_admin_password #{node[:creds][:admin_password]}"]
+    "DEFAULT os_admin_password #{node[:creds][:admin_password]}",
+    "keystone_authtoken auth_uri http://#{node[:ip][:keystone]}:5000/v2.0/",
+    "keystone_authtoken identity_uri http://#{node[:ip][:keystone]}:35357/",
+    "keystone_authtoken admin_user admin",
+    "keystone_authtoken admin_password #{node[:creds][:admin_password]}",
+    "keystone_authtoken admin_tenant_name admin"
+]
 end
 
 execute "sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head"
 
-%w[openstack-heat-api openstack-heat-api-cfn
-openstack-heat-api-cloudwatch openstack-heat-engine].each do |srv|
+%w[openstack-sahara-api].each do |srv|
   service srv do
     action [:enable, :restart]
   end

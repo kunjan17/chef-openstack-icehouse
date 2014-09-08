@@ -48,8 +48,7 @@ catalog.RegionOne.metering.adminURL = http://<%=node[:ip][:ceilometer] %>:8777
 catalog.RegionOne.metering.internalURL = http://<%= node[:ip][:ceilometer] %>:8777
 catalog.RegionOne.metering.name = ceilometer
 
-
-catalog.RegionOne.data_processing.publicURL "http://<%= node[:ip_ex][:sahara] %>:8386/v1.1/%(tenant_id)s" 
-catalog.RegionOne.data_processing.adminURL "http://<%= node[:ip][:sahara] %>:8386/v1.1/%(tenant_id)s" 
-catalog.RegionOne.data_processing.internalURL "http://<%= node[:ip][:sahara] %>:8386/v1.1/%(tenant_id)s"
+catalog.RegionOne.data_processing.publicURL = http://<%= node[:ip_ex][:sahara] %>:8386/v1.1/%(tenant_id)s
+catalog.RegionOne.data_processing.adminURL = http://<%= node[:ip][:sahara] %>:8386/v1.1/%(tenant_id)s 
+catalog.RegionOne.data_processing.internalURL = http://<%= node[:ip][:sahara] %>:8386/v1.1/%(tenant_id)s
 catalog.RegionOne.data_processing.name = sahara

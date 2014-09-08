@@ -25,7 +25,7 @@ libcloud_ssh_keys "openstack" do
 end
 
 simple_iptables_rule "heat" do
-  rule "-p tcp -m multiport --dports 8000,8003"
+  rule "-p tcp -m multiport --dports 8000,8003,8004"
   jump "ACCEPT"
 end
 
@@ -46,7 +46,8 @@ centos_cloud_config "/etc/heat/heat.conf" do
     "keystone_authtoken auth_uri http://#{node[:ip][:keystone]}:35357/v2.0",
     "keystone_authtoken admin_tenant_name admin",
     "keystone_authtoken admin_user admin",
-    "keystone_authtoken admin_password #{node[:creds][:admin_password]}"]
+    "keystone_authtoken admin_password #{node[:creds][:admin_password]}",
+    "keystone_authtoken identity_uri http://#{node[:ip][:keystone]}:35357"]
 end
 
 execute "heat-manage db_sync"

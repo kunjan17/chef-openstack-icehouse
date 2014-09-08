@@ -6,7 +6,7 @@ include_recipe "libcloud"
 #Add firewall rules 
 #NEED FIX! remove unnecessary ports
 simple_iptables_rule "opendaylight" do
-  rule "-p tcp -m multiport --dports 6640,8383,33343,12001,60601,6633,47914,7800,6633,8081"
+  rule "-p tcp -m multiport --dports 6640,6633,8081"
   jump "ACCEPT"
 end
 

@@ -62,6 +62,7 @@ centos_cloud_config "/etc/ceilometer/ceilometer.conf" do
     "keystone_authtoken auth_port 35357",
     "keystone_authtoken auth_protocol http",
     "keystone_authtoken admin_password #{node[:creds][:admin_password]}",
+    "keystone_authtoken identity_uri http://#{node[:ip][:keystone]}:35357",
     "service_credentials os_password #{node[:creds][:admin_password]}",
     "service_credentials os_auth_url http://#{node[:ip][:keystone]}:35357/v2.0",
     "service_credentials os_username admin",
