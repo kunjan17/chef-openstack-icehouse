@@ -17,16 +17,6 @@ libcloud_ssh_keys "openstack" do
   action [:create, :add]
 end
 
-%w[
-  openstack-ceilometer-api 
-  openstack-ceilometer-central
-  openstack-ceilometer-collector
-].each do |srv|
-  service srv do
-    action [:enable]
-  end
-end
-
 firewalld_rule "ceilometer" do
   action :set
   protocol "tcp"
@@ -46,12 +36,25 @@ end
   end
 end
 
-service "mongod" do
-  action [:enable,:restart]
+%w[
+  openstack-ceilometer-api 
+  openstack-ceilometer-central
+  openstack-ceilometer-collector
+].each do |srv|
+  service srv do
+    action [:enable]
+  end
 end
 
-execute %Q{mongo ceilometer --eval 'db.addUser("ceilometer","#{node[:creds][:mysql_password]}", false)'}
+service "mongod" do
+  action [:enable,:start]
+end
 
+execute "create ceilometer database" do
+  command %Q{mongo ceilometer --eval 'db.addUser("ceilometer",}<<
+    %Q{"#{node[:creds][:mysql_password]}", false)'}
+  action :run
+end
 template "/etc/ceilometer/ceilometer.conf" do
   mode "0640"
   owner "root"
@@ -62,5 +65,8 @@ template "/etc/ceilometer/ceilometer.conf" do
   notifies :restart, "service[openstack-ceilometer-collector]"
 end
 
-execute "ceilometer-dbsync"
+execute "populate ceilometer database" do
+  command "/usr/bin/ceilometer-dbsync"
+  action :run
+end
 
