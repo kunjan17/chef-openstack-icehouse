@@ -14,7 +14,8 @@ include_recipe "centos_cloud::repos"
 include_recipe "centos_cloud::mysql"
 include_recipe "centos_cloud::opendaylight"
 include_recipe "centos_cloud::openvswitch"
-include_recipe "centos_cloud::iptables-policy"
+#include_recipe "centos_cloud::iptables-policy"
+#include_recipe "firewalld"
 
 libcloud_ssh_keys node[:creds][:ssh_keypair] do
   data_bag "ssh_keypairs"
@@ -25,11 +26,11 @@ centos_cloud_database "neutron" do
   password node[:creds][:mysql_password]
 end
 
-#execute "ovs-vsctl add-br br-ex" do
-#  not_if("ovs-vsctl list-br | grep br-ex")
-#  action :run
-#end
-
+execute "ovs-vsctl add-br br-ex" do
+  not_if("ovs-vsctl list-br | grep br-ex")
+  action :run
+end
+=begin
 template "/etc/sysconfig/network-scripts/ifcfg-" + node[:auto][:external_nic]  do
   not_if do
     File.exists?("/etc/sysconfig/network-scripts/ifcfg-br-ex")
@@ -39,7 +40,7 @@ template "/etc/sysconfig/network-scripts/ifcfg-" + node[:auto][:external_nic]  d
   mode  "0644"
   source "neutron/ifcfg-ethX.erb"
 end
-
+=end
 template "/etc/sysconfig/network-scripts/ifcfg-br-ex" do
   not_if do
     File.exists?("/etc/sysconfig/network-scripts/ifcfg-br-ex")
@@ -47,13 +48,13 @@ template "/etc/sysconfig/network-scripts/ifcfg-br-ex" do
   owner "root"
   group "root"
   mode  "0644"
-  source "neutron/ifcfg-br-ex.erb"
+  source "neutron/ifcfg-br-ex-2.erb"
 end
-
+=begin
 service "network" do
   action :restart
 end
-
+=end
 centos_cloud_config "/etc/neutron/metadata_agent.ini" do
   command ["DEFAULT auth_strategy keystone",
     "DEFAULT auth_url http://#{node[:ip][:keystone]}:35357/v2.0",

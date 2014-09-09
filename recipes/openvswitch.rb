@@ -9,7 +9,8 @@
 
 include_recipe "selinux::disabled"
 include_recipe "centos_cloud::repos"
-include_recipe "centos_cloud::iptables-policy"
+#include_recipe "centos_cloud::iptables-policy"
+#include_recipe "firewalld"
 include_recipe "libcloud"
 
 %w[openstack-neutron-openvswitch openstack-neutron-ml2 python-neutronclient].each do |pkg|
