@@ -1,36 +1,45 @@
 #
-# Cookbook Name:: centos-cloud
-# Recipe:: heat
+# Cookbook Name:: centos_cloud
+# Recipe:: ceilometer
 #
-# Copyright 2013, cloudtechlab
-#
-# All rights reserved - Do Not Redistribute
-#
-#  Need to merge patches https://github.com/rcbops-cookbooks/ceilometer/tree/master/templates/default/patches
+# Copyright © 2014 Leonid Laboshin <laboshinl@gmail.com>
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
+
 include_recipe "selinux::disabled"
 include_recipe "centos_cloud::repos"
-#include_recipe "centos_cloud::mysql"
-include_recipe "centos_cloud::iptables-policy"
+include_recipe "firewalld"
 include_recipe "libcloud"
-
-#centos_cloud_database "ceilometer" do
-#  password node[:creds][:mysql_password]
-#end
-
-
 
 libcloud_ssh_keys "openstack" do
   data_bag "ssh_keypairs"
   action [:create, :add]
 end
 
-simple_iptables_rule "ceilometer" do
-  rule "-p tcp -m multiport --dports 8777"
-  jump "ACCEPT"
+%w[
+  openstack-ceilometer-api 
+  openstack-ceilometer-central
+  openstack-ceilometer-collector
+].each do |srv|
+  service srv do
+    action [:enable]
+  end
 end
 
-%w[mongodb-server mongodb openstack-ceilometer-api openstack-ceilometer-collector
-openstack-ceilometer-central python-ceilometerclient python-ceilometer
+firewalld_rule "ceilometer" do
+  action :set
+  protocol "tcp"
+  port ["8877","8822"]
+end
+
+%w[
+  mongodb-server mongodb 
+  openstack-ceilometer-api 
+  openstack-ceilometer-collector
+  openstack-ceilometer-central 
+  python-ceilometerclient 
+  python-ceilometer
 ].each do |pkg|
   package pkg do
     action :install
@@ -41,42 +50,17 @@ service "mongod" do
   action [:enable,:restart]
 end
 
-db_name='"ceilometer"'
-db_password='"'+node[:creds][:mysql_password]+'"'
-execute "mongo ceilometer --eval 'db.addUser(#{db_name},#{db_password}, false)'"
+execute %Q{mongo ceilometer --eval 'db.addUser("ceilometer","#{node[:creds][:mysql_password]}", false)'}
 
-centos_cloud_config "/etc/ceilometer/ceilometer.conf" do
-  command [#"DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_qpid",
-    "DEFAULT rpc_backend ceilometer.openstack.common.rpc.impl_kombu",
-    "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
-    "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
-    "DEFAULT log_dir /var/log/ceilometer",
-#    "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
-    "database connection  mongodb://ceilometer:#{node[:creds][:mysql_password]}@localhost/ceilometer",
-    "publisher_rpc metering_secret #{node[:creds][:metering_secret]}",
-    "keystone_authtoken service_host #{node[:ip][:keystone]}",
-    "keystone_authtoken auth_host #{node[:ip][:keystone]}",
-    "keystone_authtoken auth_uri http://#{node[:ip][:keystone]}:35357/v2.0",
-    "keystone_authtoken admin_tenant_name admin",
-    "keystone_authtoken admin_user admin",
-    "keystone_authtoken auth_port 35357",
-    "keystone_authtoken auth_protocol http",
-    "keystone_authtoken admin_password #{node[:creds][:admin_password]}",
-    "keystone_authtoken identity_uri http://#{node[:ip][:keystone]}:35357",
-    "service_credentials os_password #{node[:creds][:admin_password]}",
-    "service_credentials os_auth_url http://#{node[:ip][:keystone]}:35357/v2.0",
-    "service_credentials os_username admin",
-    "service_credentials os_tenant_name admin"
-  ]
+template "/etc/ceilometer/ceilometer.conf" do
+  mode "0640"
+  owner "root"
+  group "ceilometer"
+  source "ceilometer/ceilometer.conf.erb"
+  notifies :restart, "service[openstack-ceilometer-api]"
+  notifies :restart, "service[openstack-ceilometer-central]"
+  notifies :restart, "service[openstack-ceilometer-collector]"
 end
 
 execute "ceilometer-dbsync"
-
-%w[openstack-ceilometer-api openstack-ceilometer-central
-openstack-ceilometer-collector
-].each do |srv|
-  service srv do
-    action [:enable, :restart]
-  end
-end
 

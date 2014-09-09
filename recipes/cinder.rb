@@ -10,8 +10,7 @@ include_recipe "libcloud"
 include_recipe "selinux::disabled"
 include_recipe "centos_cloud::repos"
 include_recipe "centos_cloud::mysql"
-include_recipe "centos_cloud::mysql"
-include_recipe "centos_cloud::iptables-policy"
+include_recipe "firewalld"
 
 libcloud_ssh_keys node[:creds][:ssh_keypair] do
   data_bag "ssh_keypairs"
@@ -24,7 +23,8 @@ centos_cloud_database "cinder" do
 end
 
 # Install cinder packages
-%w[openstack-cinder targetcli].each do |pkg|
+%w[
+  openstack-cinder targetcli].each do |pkg|
   package pkg do
     action :install
   end
@@ -40,33 +40,23 @@ centos_cloud_config "/etc/cinder/cinder.conf" do
     "DEFAULT iscsi_helper lioadm",
     "DEFAULT iscsi_ip_address 127.0.0.1",
     "DEFAULT osapi_volume_workers #{node[:cpu][:real]}",
-    "keystone_authtoken auth_host #{node[:ip][:keystone]}",
-    "keystone_authtoken admin_tenant_name admin",
-    "keystone_authtoken admin_user admin",
-    "keystone_authtoken admin_password " <<
-    node[:creds][:admin_password],
     # Mysql connection
     "DEFAULT sql_connection mysql://cinder:" <<
     "#{node[:creds][:mysql_password]}@localhost/cinder",
     # Message broker
     "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_kombu",
-#   "DEFAULT rpc_backend cinder.openstack.common.rpc.impl_qpid",
-#   "DEFAULT qpid_hostname #{node[:ip][:qpid]}",
     "DEFAULT rabbit_host #{node[:ip][:rabbitmq]}",
     "DEFAULT rabbit_password #{node[:creds][:rabbitmq_password]}",
     # Multi backend
-#    "DEFAULT enabled_backends lvm,nexenta",
     "DEFAULT enabled_backends lvm",
     "lvm volume_driver cinder.volume.drivers.lvm.LVMISCSIDriver",
     "lvm volume_group  #{node[:auto][:volume_group]}",
     "lvm volume_backend_name  LVM_iSCSI",
-    "nexenta nexenta_rest_port 80",
-    "nexenta volume_driver cinder.volume.drivers.nexenta.volume.NexentaDriver",
-    "nexenta nexenta_volume main",
-    "nexenta nexenta_host 195.208.117.178",
-    "nexenta nexenta_password vBh!3dFv",
-    "nexenta nexenta_user admin",
-    "nexenta volume_backend_name Nexenta_iSCSI",]
+    "keystone_authtoken auth_host #{node[:ip][:keystone]}",
+    "keystone_authtoken admin_tenant_name admin",
+    "keystone_authtoken admin_user admin",
+    "keystone_authtoken admin_password " <<
+    node[:creds][:admin_password],]
 end
 
 centos_cloud_config "/etc/cinder/api-paste.ini" do
@@ -81,22 +71,9 @@ centos_cloud_config "/etc/cinder/api-paste.ini" do
 end
 
 # Accept incoming connections on glance ports
-simple_iptables_rule "cinder" do
-  rule "-p tcp -m multiport --dports 3260,8776"
-  jump "ACCEPT"
+%w[3260 8776].each do |port|
+  firewalld_rule port
 end
-
-#libcloud_file_append "/etc/tgt/targets.conf" do
-#  line "include /etc/cinder/volumes/*"
-#end
-#
-#libcloud_file_append "/etc/tgt/targets.conf" do
-#  line "include /etc/cinder/volumes/*"
-#end
-
-#libcloud_file_append "/etc/tgt/conf.d/cinder.conf" do
-#  line "include /etc/cinder/volumes/*"
-#end
 
 # Populate database
 execute "cinder-manage db sync"

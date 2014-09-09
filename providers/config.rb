@@ -10,3 +10,4 @@ action :set do
   end
   new_resource.updated_by_last_action(true)
 end
+
