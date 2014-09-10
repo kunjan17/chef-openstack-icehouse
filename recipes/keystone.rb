@@ -7,12 +7,12 @@
 # All rights reserved - Do Not Redistribute
 #
 
-include_recipe "selinux::disabled"
+include_recipe "centos_cloud::selinux"
 include_recipe "centos_cloud::repos"
 include_recipe "centos_cloud::mysql"
-include_recipe "centos_cloud::iptables-policy"
+include_recipe "firewalld"
 include_recipe "centos_cloud::keystone-credentials"
-include_recipe "libcloud"
+include_recipe "libcloud::ssh_key"
 
 # Open keystone-related ports
 simple_iptables_rule "keystone" do

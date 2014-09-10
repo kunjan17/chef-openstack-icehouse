@@ -7,10 +7,10 @@
 # terms of the Do What The Fuck You Want To Public License, Version 2,
 # as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-include_recipe "selinux::disabled"
+include_recipe "centos_cloud::selinux"
 include_recipe "centos_cloud::repos"
 include_recipe "firewalld"
-include_recipe "libcloud"
+include_recipe "libcloud::ssh_key"
 
 libcloud_ssh_keys "openstack" do
   data_bag "ssh_keypairs"
@@ -20,14 +20,39 @@ end
 firewalld_rule "ceilometer" do
   action :set
   protocol "tcp"
-  port ["8877","8822"]
+  port ["8877"]
 end
 
 %w[
-  mongodb-server mongodb 
+  mongodb-server 
+  mongodb 
+].each do |pkg|
+  package pkg do
+    action :install
+  end
+end
+
+service "mongod" do
+  action [:enable,:start]
+end
+
+
+%w[
   openstack-ceilometer-api 
+  openstack-ceilometer-central
   openstack-ceilometer-collector
-  openstack-ceilometer-central 
+].each do |srv|
+  package srv do
+    action :install
+  end
+  service srv do
+    action :enable
+  end
+end
+
+#Python API and CLI for OpenStack Ceilometer
+#OpenStack ceilometer python libraries
+%w[
   python-ceilometerclient 
   python-ceilometer
 ].each do |pkg|
@@ -36,29 +61,16 @@ end
   end
 end
 
-%w[
-  openstack-ceilometer-api 
-  openstack-ceilometer-central
-  openstack-ceilometer-collector
-].each do |srv|
-  service srv do
-    action [:enable]
-  end
-end
-
-service "mongod" do
-  action [:enable,:start]
-end
-
 execute "create ceilometer database" do
   command %Q{mongo ceilometer --eval 'db.addUser("ceilometer",}<<
     %Q{"#{node[:creds][:mysql_password]}", false)'}
   action :run
 end
+
 template "/etc/ceilometer/ceilometer.conf" do
-  mode "0640"
-  owner "root"
-  group "ceilometer"
+  mode   "0640"
+  owner  "root"
+  group  "ceilometer"
   source "ceilometer/ceilometer.conf.erb"
   notifies :restart, "service[openstack-ceilometer-api]"
   notifies :restart, "service[openstack-ceilometer-central]"
@@ -69,4 +81,3 @@ execute "populate ceilometer database" do
   command "/usr/bin/ceilometer-dbsync"
   action :run
 end
-

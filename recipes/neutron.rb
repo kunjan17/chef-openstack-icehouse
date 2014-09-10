@@ -8,14 +8,13 @@
 #
 require "socket"
 
-include_recipe "libcloud"
-include_recipe "selinux::disabled"
+include_recipe "libcloud::ssh_key"
+include_recipe "centos_cloud::selinux"
 include_recipe "centos_cloud::repos"
 include_recipe "centos_cloud::mysql"
 include_recipe "centos_cloud::opendaylight"
 include_recipe "centos_cloud::openvswitch"
-#include_recipe "centos_cloud::iptables-policy"
-#include_recipe "firewalld"
+include_recipe "firewalld"
 
 libcloud_ssh_keys node[:creds][:ssh_keypair] do
   data_bag "ssh_keypairs"

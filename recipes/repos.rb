@@ -8,29 +8,23 @@
 #
 
 cookbook_file "/etc/yum.repos.d/epel.repo" do
-  not_if do
-    File.exists?("/etc/yum.repos.d/epel.repo")
-  end
   source "epel.repo"
   mode "0644"
   owner "root"
   group "root"
+  action :create_if_missing
 end
 
 cookbook_file "/etc/yum.repos.d/opendaylight.repo" do
-  not_if do
-    File.exists?("/etc/yum.repos.d/opendaylight.repo")
-  end
   source "opendaylight.repo"
   mode "0644"
   owner "root"
   group "root"
+  action :create_if_missing
 end
 
 cookbook_file "/etc/yum.repos.d/openstack-icehouse.repo" do
-  not_if do
-    File.exists?("/etc/yum.repos.d/openstack-icehouse.repo")
-  end
+  action :create_if_missing
   source "openstack-icehouse.repo"
   mode "0644"
   owner "root"
