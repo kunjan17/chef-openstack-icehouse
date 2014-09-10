@@ -1,0 +1,33 @@
+[DEFAULT]
+rpc_backend = ceilometer.openstack.common.rpc.impl_kombu
+rabbit_host = <%=node[:ip][:rabbitmq]%>
+rabbit_password = <%=node[:creds][:rabbitmq_password]%>
+log_dir = /var/log/ceilometer
+
+
+[keystone_authtoken]
+service_host = <%=node[:ip][:keystone]%>
+auth_host = <%=node[:ip][:keystone]%>
+auth_uri = http://<%=node[:ip][:keystone]%>:35357/v2.0
+admin_tenant_name = admin
+admin_user = admin
+auth_port = 35357
+auth_protocol = http
+admin_password = <%=node[:creds][:admin_password]%>
+identity_uri = http://<%=node[:ip][:keystone]%>:35357
+
+
+[service_credentials]
+os_password  = <%=node[:creds][:admin_password]%>
+os_auth_url = http://<%=node[:ip][:keystone]%>:35357/v2.0
+os_username = admin
+os_tenant_name = admin
+
+
+[database]
+connection = mongodb://ceilometer:<%=node[:creds][:mysql_password]%>@localhost/ceilometer
+
+
+[publisher_rpc]
+metering_secret = <%=node[:creds][:metering_secret]%>
+

@@ -1,0 +1,54 @@
+[DEFAULT]
+sql_connection = mysql://nova:<%=node[:creds][:mysql_password]%>@<%=node[:ip][:nova]%>/nova
+rpc_backend = nova.openstack.common.rpc.impl_kombu
+rabbit_host = <%=node[:ip][:rabbitmq]%>
+rabbit_password = <%=node[:creds][:rabbitmq_password]%>
+network_api_class = nova.network.neutronv2.api.API
+neutron_auth_strategy = keystone
+neutron_url = http://<%=node[:ip][:neutron]%>:9696/
+neutron_admin_tenant_name = admin
+neutron_admin_username = admin
+neutron_admin_password = <%=node[:creds][:admin_password]%>
+neutron_admin_auth_url = http://<%=node[:ip][:neutron]%>:35357/v2.0
+security_group_api = neutron
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+libvirt_vif_driver = nova.virt.libvirt.vif.LibvirtGenericVIFDriver
+auth_strategy = keystone
+vnc_enabled = true
+allow_admin_api = true
+use_deprecated_auth = false
+dmz_cidr = 169.254.169.254/32
+metadata_host = <%=node[:auto][:internal_ip]%>
+metadata_listen = 0.0.0.0
+enabled_apis = ec2,osapi_compute,metadata
+novncproxy_base_url = http://<%=node[:ip_ex][:nova]%>:6080/vnc_auto.html
+vncserver_proxyclient_address = <%=node[:auto][:internal_ip]%>
+vncserver_listen = <%=node[:auto][:internal_ip]%>
+resume_guests_state_on_host_boot = true
+service_neutron_metadata_proxy = True
+instance_usage_audit = True
+instance_usage_audit_period = hour
+notify_on_state_change = vm_and_task_state
+notification_driver = ceilometer.compute.nova_notifier
+neutron_metadata_proxy_shared_secret = <%=node[:creds][:neutron_secret]%>
+libvirt_type = qemu
+glance_api_servers = <%=node[:ip][:glance]%>:9292
+vif_plugging_is_fatal = false
+vif_plugging_timeout = 0
+
+
+[spice]
+agent_enabled = True
+enabled = True
+html5proxy_base_url = http://<%=node[:ip][:nova]%>:6082/spice_auto.html
+keymap = en-us
+server_listen = 127.0.0.1
+server_proxyclient_address = 127.0.0.1
+
+
+[keystone_authtoken]
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+auth_host = <%=node[:ip][:keystone]%>
+identity_uri = http://<%=node[:ip][:keystone]%>:35357

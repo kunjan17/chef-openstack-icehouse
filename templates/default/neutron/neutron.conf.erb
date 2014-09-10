@@ -1,0 +1,29 @@
+[DEFAULT]
+auth_strategy = keystone
+rpc_backend = neutron.openstack.common.rpc.impl_kombu
+rabbit_host = <%=node[:ip][:rabbitmq]%>
+rabbit_password = <%=node[:creds][:rabbitmq_password]%>
+allow_overlapping_ips = True
+notification_driver = neutron.openstack.common.notifier.rpc_notifier
+core_plugin = ml2
+service_plugins = router
+notify_nova_on_port_status_changes = True
+notify_nova_on_port_data_changes = True
+nova_url = http://<%=node[:ip][:nova]%>:8774/v2
+nova_admin_username = admin
+nova_admin_tenant_id = <%=@tenant_id%>
+nova_admin_password = <%=node[:creds][:admin_password]%>
+nova_admin_auth_url = http://<%=node[:ip][:keystone]%>:35357/v2.0
+
+[keystone_authtoken]
+auth_host = <%=node[:ip][:keystone]%>
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+
+[database]
+connection = mysql://neutron:<%=node[:creds][:mysql_password]%>@<%=node[:ip][:neutron]%>/neutron
+
+[service_providers]
+service_provider = LOADBALANCER:Haproxy:neutron.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
+
