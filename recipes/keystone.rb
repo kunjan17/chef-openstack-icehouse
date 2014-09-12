@@ -103,7 +103,7 @@ end
 #  end
 #end
 execute "keystone create admin user" do
-  command "keystone bootstrap"<<
+  command "keystone bootstrap "<<
            "--pass #{node[:creds][:admin_password]}"
   environment ({
     'OS_SERVICE_TOKEN' => node[:creds][:keystone_token],
