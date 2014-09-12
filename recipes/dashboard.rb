@@ -27,7 +27,7 @@ include_recipe "firewalld"
 end
 
 service "httpd" do
-  action :enable
+  action [:enable,:start]
 end
 
 firewalld_rule "dashboard" do
@@ -57,11 +57,15 @@ execute "sed -i 's/data_processing/data-processing/' /usr/lib/python2.7/site-pac
 action :run
 end
 
-#libcloud_file_append "/var/www/html/index.html" do
-#  line ["<head>",
-#    "<meta http-equiv='refresh' content='N; URL=/dashboard'>",
-#    "</head>"]
-#end
+#Redirect to /dashboard
+cookbook_file "/var/www/html/index.html" do
+  source "index.html"
+  mode   "0644"
+  owner  "root"
+  group  "root"
+  action :create_if_missing
+  notifies :restart, "service[httpd]"
+end
 
 #Enforce https
 template "/etc/httpd/conf.d/https.conf" do

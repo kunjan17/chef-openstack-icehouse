@@ -32,6 +32,7 @@ end
 end
 
 #REMOVE ME!!
+=begin
 cookbook_file "/tmp/lvm_fix.sh" do
   owner "root"
   group "root"
@@ -43,6 +44,7 @@ end
 execute "bash /tmp/lvm_fix.sh" do
   ignore_failure true
 end
+=end
 
 lvm_logical_volume "swift" do 
   group node[:auto][:volume_group]
