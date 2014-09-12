@@ -1,0 +1,6 @@
+[DEFAULT]
+admin_token = <%= node[:creds][:keystone_token] %>
+[sql] 
+connection =  mysql://keystone:<%=node[:creds][:mysql_password]%>@<%=node[:ip][:keystone]%>/keystone
+[catalog] 
+driver = keystone.catalog.backends.templated.TemplatedCatalog

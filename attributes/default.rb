@@ -72,7 +72,8 @@ default[:ip_ex][:ceilometer]  = node[:ip_ex][:controller]
 default[:ip][:sahara]         = node[:ip][:controller]
 default[:ip_ex][:sahara]      = node[:ip_ex][:controller]
 default[:ip][:monitoring]     = node[:ip][:controller]
-  
+
+default[:odl][:ram]="1G"
 #default[:ip][:esxi]                   = "192.168.250.100"
 #default[:ip][:nexenta]                = "195.208.117.178"
   

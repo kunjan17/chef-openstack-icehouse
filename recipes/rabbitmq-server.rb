@@ -1,45 +1,36 @@
 #
-# Cookbook Name:: centos-cloud
-# Recipe:: rabbitmq-server
+# Cookbook Name:: centos_cloud
+# Recipe:: ceilometer
 #
-# Copyright 2013, cloudtechlab
-#
-# All rights reserved - Do Not Redistribute
-#
-include_recipe "selinux::disabled"
-include_recipe "centos_cloud::repos"
-include_recipe "centos_cloud::iptables-policy"
-include_recipe "libcloud"
+# Copyright © 2014 Leonid Laboshin <laboshinl@gmail.com>
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-libcloud_ssh_keys "openstack" do
-    data_bag "ssh_keypairs"    
-    action [:create, :add] 
-end
+include_recipe "centos_cloud::common"
 
 package "rabbitmq-server" do
-    action :install
+  action :install
+  notifies :run, "execute[Fix rabbit first start]", :immediately
 end
 
-simple_iptables_rule "rabbitmq" do
-  rule "-p tcp -m tcp --dport 5672"
-  jump "ACCEPT"
+firewalld_rule "keystone" do
+  action :set
+  protocol "tcp"
+  port "5672"
 end
 
 service "rabbitmq-server" do
   action [:enable, :start]
 end
 
-execute "rabbitmqctl -q change_password guest '#{node[:creds][:rabbitmq_password]}'" do
-  ignore_failure true
-  action :run
-end
-
-service "rabbitmq-server" do
-  action :restart
+execute "Fix rabbit first start" do
+  command "rabbitmqctl status || : "
+  action :nothing
+  notifies :restart, "service[rabbitmq-server]", :immediately
 end
 
 execute "rabbitmqctl -q change_password guest '#{node[:creds][:rabbitmq_password]}'" do
-  ignore_failure true
   action :run
 end
 

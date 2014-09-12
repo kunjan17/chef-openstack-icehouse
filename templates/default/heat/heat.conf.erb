@@ -1,0 +1,18 @@
+[DEFAULT]
+sql_connection = mysql://heat:<%=node[:creds][:mysql_password]%>@localhost/heat
+heat_metadata_server_url = http://<%=node[:ip][:heat]%>:8000
+heat_waitcondition_server_url = http://<%=node[:ip][:heat]%>:8000/v1/waitcondition
+heat_watch_server_url = http://<%=node[:ip][:heat]%>:8003
+rpc_backend = heat.openstack.common.rpc.impl_kombu
+rabbit_host = <%=node[:ip][:rabbitmq]%>
+rabbit_password = <%=node[:creds][:rabbitmq_password]%>
+
+[keystone_authtoken]
+service_host = <%=node[:ip][:keystone]%>
+auth_host = <%=node[:ip][:keystone]%>
+auth_uri = http://<%=node[:ip][:keystone]%>:35357/v2.0
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+identity_uri = http://<%=node[:ip][:keystone]%>:35357
+

@@ -1,0 +1,26 @@
+[DEFAULT]
+auth_strategy = keystone
+notification_driver = cinder.openstack.common.notifier.rpc_notifier
+control_exchange = cinder
+iscsi_helper = lioadm
+iscsi_ip_address = 127.0.0.1
+osapi_volume_workers = <%=node[:cpu][:real]%>
+sql_connection = mysql://cinder:<%=node[:creds][:mysql_password]%>@localhost/cinder
+rpc_backend = cinder.openstack.common.rpc.impl_kombu
+rabbit_host = <%=node[:ip][:rabbitmq]%>
+rabbit_password = <%=node[:creds][:rabbitmq_password]%>
+enabled_backends = lvm
+
+
+
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMISCSIDriver
+volume_group = <%=node[:auto][:volume_group]%>
+volume_backend_name = LVM_iSCSI
+
+
+[keystone_authtoken]
+auth_host = <%=node[:ip][:keystone]%>
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%= node[:creds][:admin_password]%>

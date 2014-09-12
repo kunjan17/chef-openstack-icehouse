@@ -1,0 +1,14 @@
+[database]
+connection = mysql://glance:<%=node[:creds][:mysql_password]%>@localhost/glance
+
+[paste_deploy]
+flavor = keystone
+
+[keystone_authtoken]
+auth_host = <%=node[:ip][:keystone]%>
+auth_port = 35357
+auth_protocol = http
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+

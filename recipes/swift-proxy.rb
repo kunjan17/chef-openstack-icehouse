@@ -1,42 +1,31 @@
 #
-# Cookbook Name:: centos-cloud
+# Cookbook Name:: centos_cloud
 # Recipe:: swift-proxy
 #
-# Copyright 2013, cloudtechlab
-#
-# All rights reserved - Do Not Redistribute
-#
+# Copyright © 2014 Leonid Laboshin <laboshinl@gmail.com>
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-# Adding epel & openstack repos
-include_recipe "selinux::disabled"
-include_recipe "libcloud"
-include_recipe "centos_cloud::repos"
-include_recipe "centos_cloud::iptables-policy"
-include_recipe "centos_cloud::keystone-credentials"
 
-libcloud_ssh_keys node[:creds][:ssh_keypair] do
-  data_bag "ssh_keypairs"
-  action [:create, :add]
-end
+include_recipe "centos_cloud::common"
 
-%w[memcached openstack-swift-proxy python-keystoneclient].each do |pkg|
+%w[
+  memcached 
+  openstack-swift-proxy
+  python-keystoneclient
+].each do |pkg|
   package pkg do
     action :install
   end
 end
 
-centos_cloud_config "/etc/swift/proxy-server.conf" do
-  command [
-    "filter:authtoken admin_tenant_name admin",
-    "filter:authtoken admin_user admin",
-    "filter:authtoken admin_password #{node[:creds][:admin_password]}",
-    "filter:authtoken auth_host #{node[:ip][:keystone]}",
-    "filter:authtoken auth_port 35357",
-    "filter:authtoken auth_protocol http",
-    "filter:authtoken auth_uri http://#{node[:ip][:keystone]}:5000",
-    "filter:keystone operator_roles admin,Member",
-    "filter:ceilometer use egg:ceilometer#swift"
-  ]
+template "/etc/swift/proxy-server.conf" do
+  source "swift/proxy-server.conf.erb"
+  owner "swift"
+  group "swift"
+  mode "0600"
+  notifies :restart, "service[openstack-swift-proxy]"
 end
 
 centos_cloud_config "/etc/swift/swift.conf" do
@@ -57,20 +46,18 @@ directory "/tmp/keystone-signing-swift" do
 end
 
 # Proxy failes to start until there is at least one node, it's pretty normal
-%w[memcached openstack-swift-proxy].each do |srv|
+%w[
+memcached 
+openstack-swift-proxy
+].each do |srv|
   service srv do
     action [:enable, :restart]
   end
 end
 
-# Allow swift-proxy related packets
-simple_iptables_rule "swift-proxy" do
-  rule "-p tcp -m multiport --dports 8080"
-  jump "ACCEPT"
-end
-
-simple_iptables_rule "memcached" do
-  rule "-p tcp -m multiport --dports 11211"
-  jump "ACCEPT"
+firewalld_rule "swift-proxy" do
+  action :set
+  protocol "tcp"
+  port %w[8080]
 end
 

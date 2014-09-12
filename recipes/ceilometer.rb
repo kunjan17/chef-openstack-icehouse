@@ -7,15 +7,8 @@
 # terms of the Do What The Fuck You Want To Public License, Version 2,
 # as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-include_recipe "centos_cloud::selinux"
-include_recipe "centos_cloud::repos"
-include_recipe "firewalld"
-include_recipe "libcloud::ssh_key"
-
-libcloud_ssh_keys "openstack" do
-  data_bag "ssh_keypairs"
-  action [:create, :add]
-end
+include_recipe "centos_cloud::common"
+include_recipe "centos_cloud::mysql"
 
 firewalld_rule "ceilometer" do
   action :set
@@ -46,7 +39,7 @@ end
     action :install
   end
   service srv do
-    action :enable
+    action [:enable,:start]
   end
 end
 

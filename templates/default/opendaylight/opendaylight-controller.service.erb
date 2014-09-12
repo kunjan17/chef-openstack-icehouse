@@ -10,7 +10,7 @@ Group=root
 WorkingDirectory=/usr/share/opendaylight
 LimitNOFILE=30720
 LimitNPROC=20480
-ExecStart=-/usr/share/opendaylight/run.sh -of13 -Xmx1G -virt ovsdb -start
+ExecStart=-/usr/share/opendaylight/run.sh -of13 -Xmx<%=node[:odl][:ram]%> -virt ovsdb -start
 ExecStop=-/usr/share/opendaylight/run.sh -stop
 
 [Install]

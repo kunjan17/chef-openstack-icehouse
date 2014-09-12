@@ -1,0 +1,25 @@
+[DEFAULT]
+os_auth_host = <%=node[:ip][:keystone]%>
+os_auth_port = 35357
+enable_notifications = true
+notification_driver = messaging
+rpc_backend = rabbit
+rabbit_host = <%=node[:ip][:rabbitmq]%>
+rabbit_password = <%=node[:creds][:rabbitmq_password]%>
+os_admin_tenant_name = admin
+os_admin_username = admin
+os_admin_password = <%=node[:creds][:admin_password]%>
+
+
+
+[database]
+connection = mysql://sahara:<%=node[:creds][:mysql_password]%>@localhost/sahara
+
+
+[keystone_authtoken]
+auth_uri = http://<%=node[:ip][:keystone]%>:5000/v2.0/
+identity_uri = http://<%=node[:ip][:keystone]%>:35357/
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+admin_tenant_name = admin
+

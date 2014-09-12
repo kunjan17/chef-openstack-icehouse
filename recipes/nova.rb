@@ -1,23 +1,16 @@
 #
-# Cookbook Name:: centos-cloud
+# Cookbook Name:: centos_cloud
 # Recipe:: nova
 #
-# Copyright 2013, cloudtechlab
-#
-# All rights reserved - Do Not Redistribute
-#
-include_recipe "tar"
-include_recipe "libcloud::ssh_key"
-include_recipe "centos_cloud::selinux"
-include_recipe "centos_cloud::repos"
-include_recipe "centos_cloud::mysql"
-include_recipe "firewalld"
-include_recipe "centos_cloud::dashboard"
+# Copyright © 2014 Leonid Laboshin <laboshinl@gmail.com>
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-libcloud_ssh_keys node[:creds][:ssh_keypair] do
-  data_bag "ssh_keypairs"
-  action [:create, :add]
-end
+include_recipe "tar"
+include_recipe "centos_cloud::common"
+include_recipe "centos_cloud::mysql"
+include_recipe "centos_cloud::dashboard"
 
 centos_cloud_database "nova" do
   password node[:creds][:mysql_password]
@@ -35,7 +28,7 @@ end
     action :install
   end
   service srv do
-    action :enable
+    action [:enable,:start]
   end
 end
 

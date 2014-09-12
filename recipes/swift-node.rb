@@ -1,22 +1,14 @@
 #
-# Cookbook Name:: centos-cloud
+# Cookbook Name:: centos_cloud
 # Recipe:: swift-node
 #
-# Copyright 2013, cloudtechlab
-#
-# All rights reserved - Do Not Redistribute
-#
-include_recipe "libcloud"
-include_recipe "lvm"
-include_recipe "selinux::disabled"
-include_recipe "centos_cloud::repos"
-include_recipe "centos_cloud::iptables-policy"
-include_recipe "centos_cloud::keystone-credentials"
+# Copyright © 2014 Leonid Laboshin <laboshinl@gmail.com>
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
-libcloud_ssh_keys node[:creds][:ssh_keypair] do
-  data_bag "ssh_keypairs"
-  action [:create, :add]
-end
+include_recipe "lvm"
+include_recipe "centos_cloud::common"
 
 %w[
 xfsprogs
@@ -58,10 +50,11 @@ lvm_logical_volume "swift" do
   filesystem 'xfs' 
   mount_point '/srv/node/device/' 
 end 
-  
-simple_iptables_rule "swift-node" do
-  rule "-p tcp -m multiport --dports 6000,6001,6002,873"
-  jump "ACCEPT"
+
+firewalld_rule "swift-node" do
+  action :set
+  protocol "tcp"
+  port %w[6000 6001 6002 873]
 end
 
 centos_cloud_config "/etc/swift/swift.conf" do
@@ -92,7 +85,11 @@ libcloud_ssh_command "manage rings" do
 end
 
 # Copy ring files from proxy server
-%w[ container.ring.gz account.ring.gz object.ring.gz ].each do |file|
+%w[ 
+container.ring.gz 
+account.ring.gz 
+object.ring.gz 
+].each do |file|
   libcloud_file_scp "/etc/swift/"+file do
     not_if do
       node[:ip][:swift] == node[:auto][:internal_ip]
@@ -101,8 +98,9 @@ end
     remote_path "/etc/swift/"+file
   end
 end
+
 # Start proxy remotely
-libcloud_ssh_command "service openstack-swift-proxy restart" do
+libcloud_ssh_command "/bin/systemctl restart openstack-swift-proxy.service" do
   server node[:ip][:swift]
 end
 

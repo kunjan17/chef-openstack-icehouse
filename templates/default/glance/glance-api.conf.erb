@@ -1,0 +1,25 @@
+[DEFAULT]
+default_store = file
+swift_store_auth_address = http://<%=node[:ip][:keystone]%>:5000/v2.0/
+swift_store_user = admin:admin
+notifier_strategy = rabbit
+rabbit_password = <%=node[:creds][:rabbitmq_password]%>
+rabbit_host = <%=node[:ip][:rabbitmq]%>
+swift_store_create_container_on_put = True
+swift_store_key = <%=node[:creds][:admin_password]%>
+db_enforce_mysql_charset = False
+
+[database]
+connection = mysql://glance:<%=node[:creds][:mysql_password]%>@localhost/glance
+
+[paste_deploy]
+flavor = keystone
+
+[keystone_authtoken]
+auth_host = <%=node[:ip][:keystone]%>
+auth_port = 35357
+auth_protocol = http
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+

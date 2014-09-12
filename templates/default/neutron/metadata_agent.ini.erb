@@ -1,0 +1,9 @@
+[DEFAULT]
+auth_strategy = keystone
+auth_url = http://<%=node[:ip][:keystone]%>:35357/v2.0
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+metadata_proxy_shared_secret = <%=node[:creds][:neutron_secret]%>
+nova_metadata_ip = <%node[:ip][:nova]%>
+

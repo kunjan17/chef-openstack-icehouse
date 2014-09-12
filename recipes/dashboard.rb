@@ -47,7 +47,7 @@ end
 template "/etc/openstack-dashboard/local_settings" do 
   mode "0640"
   owner "root"
-  group "root"
+  group "apache"
   source "dashboard/local_settings.erb"
   notifies :restart, "service[httpd]"
 end
@@ -56,6 +56,12 @@ end
 execute "sed -i 's/data_processing/data-processing/' /usr/lib/python2.7/site-packages/saharadashboard/api/client.py" do
 action :run
 end
+
+#libcloud_file_append "/var/www/html/index.html" do
+#  line ["<head>",
+#    "<meta http-equiv='refresh' content='N; URL=/dashboard'>",
+#    "</head>"]
+#end
 
 #Enforce https
 template "/etc/httpd/conf.d/https.conf" do

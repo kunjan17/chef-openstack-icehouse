@@ -1,0 +1,45 @@
+[DEFAULT]
+bind_port = 8080
+workers = 8
+user = swift
+
+[pipeline:main]
+pipeline = healthcheck cache authtoken keystone proxy-server
+
+[app:proxy-server]
+use = egg:swift#proxy
+allow_account_management = true
+account_autocreate = true
+
+[filter:cache]
+use = egg:swift#memcache
+memcache_servers = 127.0.0.1:11211
+
+[filter:catch_errors]
+use = egg:swift#catch_errors
+
+[filter:healthcheck]
+use = egg:swift#healthcheck
+
+[filter:keystone]
+use = egg:swift#keystoneauth
+operator_roles = admin,Member
+is_admin = true
+cache = swift.cache
+
+[filter:authtoken]
+paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+admin_tenant_name = admin
+admin_user = admin
+admin_password = <%=node[:creds][:admin_password]%>
+auth_host = <%=node[:ip][:keystone]%>
+auth_port = 35357
+auth_protocol = http
+signing_dir = /tmp/keystone-signing-swift
+auth_uri = http://<%=node[:ip][:keystone]%>:5000
+identity_uri=http://<%=node[:ip][:keystone]%>:35357
+
+
+
+[filter:ceilometer]
+use = egg:ceilometer#swift

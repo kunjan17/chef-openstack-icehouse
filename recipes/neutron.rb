@@ -6,29 +6,34 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-require "socket"
+#require "socket"
 
-include_recipe "libcloud::ssh_key"
-include_recipe "centos_cloud::selinux"
-include_recipe "centos_cloud::repos"
+include_recipe "centos_cloud::common"
 include_recipe "centos_cloud::mysql"
 include_recipe "centos_cloud::opendaylight"
 include_recipe "centos_cloud::openvswitch"
-include_recipe "firewalld"
-
-libcloud_ssh_keys node[:creds][:ssh_keypair] do
-  data_bag "ssh_keypairs"
-  action [:create, :add]
-end
 
 centos_cloud_database "neutron" do
   password node[:creds][:mysql_password]
+end
+
+%w[
+neutron-dhcp-agent 
+neutron-l3-agent
+neutron-metadata-agent
+neutron-lbaas-agent
+neutron-server
+].each do |srv|
+  service srv do
+    action [:enable,:start]
+  end
 end
 
 execute "ovs-vsctl add-br br-ex" do
   not_if("ovs-vsctl list-br | grep br-ex")
   action :run
 end
+
 =begin
 template "/etc/sysconfig/network-scripts/ifcfg-" + node[:auto][:external_nic]  do
   not_if do
@@ -54,43 +59,32 @@ service "network" do
   action :restart
 end
 =end
-centos_cloud_config "/etc/neutron/metadata_agent.ini" do
-  command ["DEFAULT auth_strategy keystone",
-    "DEFAULT auth_url http://#{node[:ip][:keystone]}:35357/v2.0",
-    "DEFAULT admin_tenant_name admin",
-    "DEFAULT admin_user admin",
-    "DEFAULT admin_password #{node[:creds][:admin_password]}",
-    "DEFAULT metadata_proxy_shared_secret #{node[:creds][:neutron_secret]}",
-    "DEFAULT nova_metadata_ip #{node[:ip][:nova]}"]
+
+template "/etc/neutron/metadata_agent.ini" do
+  source "neutron/metadata_agent.ini.erb"
+  notifies :restart, "service[neutron-metadata-agent]"
 end
 
-centos_cloud_config "/etc/neutron/dhcp_agent.ini" do
-  command ["DEFAULT enable_isolated_metadata True",
-    "DEFAULT use_namespaces True",
-    "DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver",
-    "DEFAULT dnsmasq_dns_server 8.8.8.8",
-    "DEFAULT ovs_use_veth True",
-    "DEFAULT dnsmasq_config_file /etc/neutron/dnsmasq-neutron.conf"]
+template "/etc/neutron/dhcp_agent.ini" do
+  source "neutron/dhcp_agent.ini.erb"
+  notifies :restart, "service[neutron-dhcp-agent]"
 end
 
-centos_cloud_config "/etc/neutron/lbaas_agent.ini" do
-  command ["DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver",
-    "DEFAULT device_driver neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver",
-    "haproxy user_group haproxy"]
+template "/etc/neutron/lbaas_agent.ini" do
+  source "neutron/lbaas_agent.ini.erb"
+  notifies :restart, "service[neutron-lbaas-agent]"
 end
 
 libcloud_file_append "/etc/neutron/dnsmasq-neutron.conf" do
   line ["dhcp-option-force=26,1454"]
 end
 
-centos_cloud_config "/etc/neutron/l3_agent.ini" do
-  command ["DEFAULT interface_driver neutron.agent.linux.interface.OVSInterfaceDriver",
-    "DEFAULT external_network_bridge br-ex",
-    "DEFAULT use_namespaces True",
-    "DEFAULT ovs_use_veth True"]
+template "/etc/neutron/l3_agent.ini" do
+  source "neutron/l3_agent.ini.erb"
+  notifies :restart, "service[neutron-l3-agent]"
 end
 
-#Support for configurating neutron
+#Help with configuting public network
 template "/root/floating-pool.sh" do
   source "neutron/floating-pool.erb"
   owner "root"
@@ -98,8 +92,4 @@ template "/root/floating-pool.sh" do
   mode "0744"
 end
 
-%w[openvswitch neutron-dhcp-agent neutron-openvswitch-agent neutron-l3-agent neutron-server neutron-metadata-agent].each do |srv|
-  service srv do
-    action [:enable, :restart]
-  end
-end
+
