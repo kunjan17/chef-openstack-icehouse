@@ -39,7 +39,7 @@ end
 
 execute "Populate sahara database" do
   command "sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head"
-  action :nothing
+  action :run
 end
 
 

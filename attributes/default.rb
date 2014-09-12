@@ -34,14 +34,10 @@ default[:auto][:gateway] = node[:network][:default_gateway]
 default[:auto][:netmask] = node[:network][:interfaces][external_iface]\
 [:addresses][external_ipv4][:netmask]
 
-#default[:creds][:admin_password]  = SecureRandom.urlsafe_base64(8)
-#default[:creds][:mysql_password]  = SecureRandom.urlsafe_base64(8)
+
 default[:creds][:admin_password]  = "cl0udAdmin"
 default[:creds][:mysql_password]  = "cl0udAdmin"
 default[:creds][:rabbitmq_password] = "cl0udAdmin"
-#default[:creds][:keystone_token]  = SecureRandom.urlsafe_base64(20)
-#default[:creds][:swift_hash]      = SecureRandom.urlsafe_base64(20)
-#default[:creds][:neutron_secret]  = SecureRandom.urlsafe_base64(20)
 default[:creds][:keystone_token]  = "Key5t0ne5ecret"
 default[:creds][:swift_hash]      = "5wift5ecret"
 default[:creds][:neutron_secret]  = "Neutr0n5ecret"
@@ -51,7 +47,6 @@ default[:creds][:esxi_password]   = "mySuperSecret"
 
 default[:ip][:controller]     = node[:auto][:internal_ip]
 default[:ip_ex][:controller]  = node[:auto][:external_ip]
-#default[:ip][:qpid]           = node[:ip][:controller]
 default[:ip][:rabbitmq]       = node[:ip][:controller]
 default[:ip][:keystone]       = node[:ip][:controller]
 default[:ip_ex][:keystone]    = node[:ip_ex][:controller]
@@ -74,7 +69,5 @@ default[:ip_ex][:sahara]      = node[:ip_ex][:controller]
 default[:ip][:monitoring]     = node[:ip][:controller]
 
 default[:odl][:ram]="1G"
-#default[:ip][:esxi]                   = "192.168.250.100"
-#default[:ip][:nexenta]                = "195.208.117.178"
   
 
