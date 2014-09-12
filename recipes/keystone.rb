@@ -85,23 +85,6 @@ libcloud_api_wait node[:ip][:keystone] do
   port "35357"
 end
 
-# Create admin user
-#[
-#  "keystone bootstrap --user-name admin "<<
-#    "--role-name admin "<<
-#    "--tenant-name admin || :",
-#  "keystone role-create --name Member || :",
-#  "keystone role-create --name ResellerAdmin || :",
-#  "keystone user-role-add --user admin --role-id ResellerAdmin --tenant-id admin || :"
-#].each do |cmd|
-#  execute cmd do
-#    environment ({
-#      'OS_SERVICE_TOKEN' => node[:creds][:keystone_token],
-#      'OS_SERVICE_ENDPOINT' => 'http://' + node[:ip][:keystone] + ':35357/v2.0'
-#    })
-#    action :run
-#  end
-#end
 execute "keystone create admin user" do
   command "keystone bootstrap "<<
            "--pass #{node[:creds][:admin_password]}"
@@ -111,6 +94,20 @@ execute "keystone create admin user" do
   })
   not_if ("keystone user-list | grep admin")
   action :run
+end
+
+[
+  "keystone role-create --name Member || :",
+  "keystone role-create --name ResellerAdmin || :",
+  "keystone user-role-add --user admin --role-id ResellerAdmin --tenant-id admin || :"
+].each do |cmd|
+  execute cmd do
+    environment ({
+      'OS_SERVICE_TOKEN' => node[:creds][:keystone_token],
+      'OS_SERVICE_ENDPOINT' => 'http://' + node[:ip][:keystone] + ':35357/v2.0'
+    })
+    action :run
+  end
 end
 
 execute "keystone update admin password" do
